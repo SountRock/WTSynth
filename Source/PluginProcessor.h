@@ -10,6 +10,8 @@
 
 #include <JuceHeader.h>
 #include "Data//WTSynth.h"
+
+using namespace std;
 //==============================================================================
 /**
 */
@@ -59,12 +61,14 @@ public:
 	juce::AudioProcessorValueTreeState::ParameterLayout createParams();
 
 	juce::AudioProcessorValueTreeState apvts;
+
+	std::vector<double> envlGenerate(int numSamples, double attack, double decay, double sustain, double realize);
+
+	bool envlChanged = false;
 private:
     //==============================================================================
-	WTSynth synth1;
-	WTSynth synth2;
-	WTSynth synth3;
-	WTSynth synth4;
+	WTSynth synth;
+	std::vector<double> envl;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WTSynthAudioProcessor)
 };

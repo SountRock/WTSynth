@@ -61,10 +61,10 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <FILTER uid="21" x="0.3924528301886793" y="0.5374015748031497" useARA="0">
-    <PLUGIN name="WT Synth" format="VST3" category="Instrument|Synth" manufacturer="yourcompany"
-            version="1.0.0" file="D:\MussCode\Project\JUCE\Alpha R\Builds\VisualStudio2019\x64\Debug\VST3\WT Synth.vst3"
-            uniqueId="ffa2de23" isInstrument="1" fileTime="18a00193b6e" infoUpdateTime="18a84846666"
+  <FILTER uid="23" x="0.3981132075471698" y="0.5413385826771654" useARA="0">
+    <PLUGIN name="WTSynth" format="VST3" category="Instrument|Synth" manufacturer="yourcompany"
+            version="1.0.0" file="D:\MussCode\Project\JUCE\WTSynth\Builds\VisualStudio2019\x64\Debug\VST3\WTSynth.vst3"
+            uniqueId="ffa2de23" isInstrument="1" fileTime="18a85047d7b" infoUpdateTime="18a8505517c"
             numInputs="0" numOutputs="2" isShell="0" hasARAExtension="0"
             uid="e95969e3"/>
     <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
@@ -75,7 +75,7 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <CONNECTION srcFilter="18" srcChannel="4096" dstFilter="21" dstChannel="4096"/>
-  <CONNECTION srcFilter="21" srcChannel="0" dstFilter="19" dstChannel="0"/>
-  <CONNECTION srcFilter="21" srcChannel="1" dstFilter="19" dstChannel="1"/>
+  <CONNECTION srcFilter="18" srcChannel="4096" dstFilter="23" dstChannel="4096"/>
+  <CONNECTION srcFilter="23" srcChannel="0" dstFilter="19" dstChannel="0"/>
+  <CONNECTION srcFilter="23" srcChannel="1" dstFilter="19" dstChannel="1"/>
 </FILTERGRAPH>

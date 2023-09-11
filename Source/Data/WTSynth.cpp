@@ -25,7 +25,7 @@ void WTSynth::prepareToPlay(double sampleRate)
 	initializeOscillators();
 }
 
-void WTSynth::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void WTSynth::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages, std::vector<double> envl)
 {
 	auto currentSample = 0;
 
@@ -33,12 +33,12 @@ void WTSynth::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& m
 		const auto midiEvent = midiMessage.getMessage();
 		const auto midiEventSample = static_cast<int>(midiEvent.getTimeStamp());
 
-		render(buffer, currentSample, midiEventSample);
+		render(buffer, currentSample, midiEventSample, envl);
 		handleMidiEvent(midiEvent);
 
 		currentSample = midiEventSample;
 	}
-	render(buffer, currentSample, buffer.getNumSamples());
+	render(buffer, currentSample, buffer.getNumSamples(), envl);
 }
 
 void WTSynth::initializeOscillators()
@@ -79,14 +79,14 @@ float WTSynth::midiNoteNumberToFrequency(int midiNoteNumber)
 	return A4_FREQUENCY * std::powf(2.f, (midiNoteNumber - A4_NOTE_NUMBER) / SEMITONES_IN_AN_OCTAVE);
 }
 
-void WTSynth::render(juce::AudioBuffer<float>& buffer, int startSample, int endSample)
+void WTSynth::render(juce::AudioBuffer<float>& buffer, int startSample, int endSample, std::vector<double> envl)
 {
 	auto* firstChannel = buffer.getWritePointer(0);
 
 	for (auto& oscillator : oscillators) {
 		if (oscillator.isPlaying()) {
 			for (auto sample = startSample; sample < endSample; ++sample) {
-				firstChannel[sample] += oscillator.getSample();
+				firstChannel[sample] += oscillator.getSample() * envl[sample];
 			}
 		}
 	}

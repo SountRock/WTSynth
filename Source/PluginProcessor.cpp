@@ -23,6 +23,7 @@ WTSynthAudioProcessor::WTSynthAudioProcessor()
                        ), apvts(*this, nullptr, "Parameters", createParams())
 #endif
 {
+	envlChanged = true;
 }
 
 WTSynthAudioProcessor::~WTSynthAudioProcessor()
@@ -94,7 +95,7 @@ void WTSynthAudioProcessor::changeProgramName (int index, const juce::String& ne
 //==============================================================================
 void WTSynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-	synth1.prepareToPlay(sampleRate);
+	synth.prepareToPlay(sampleRate);
 }
 
 void WTSynthAudioProcessor::releaseResources()
@@ -135,10 +136,12 @@ void WTSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 
 	buffer.clear();
 
-	synth1.processBlock(buffer, midiMessages);
-	synth2.processBlock(buffer, midiMessages);
-	synth3.processBlock(buffer, midiMessages);
-	synth4.processBlock(buffer, midiMessages);
+	if (envlChanged) {
+		envl.swap(envlGenerate(buffer.getNumSamples(), 0.0, 0.0, 0.0, 0.0));
+	}
+
+	synth.processBlock(buffer, midiMessages, envl);
+	
 }
 
 //==============================================================================
@@ -165,6 +168,23 @@ void WTSynthAudioProcessor::setStateInformation (const void* data, int sizeInByt
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
 }
+
+//ENVELOPE==============================================================================
+std::vector<double> WTSynthAudioProcessor::envlGenerate(int numSamples, double attack, double decay, double sustain, double realize)
+{
+	std::vector<double> envlGen;
+
+	envlGen.resize(numSamples);
+
+	for (auto s = 0; s < numSamples; s++) {
+		envlGen[s] = 1.0;
+	}
+
+	envlChanged = false;
+
+	return envlGen;
+}
+//ENVELOPE==============================================================================
 
 juce::AudioProcessorValueTreeState::ParameterLayout WTSynthAudioProcessor::createParams()
 {
