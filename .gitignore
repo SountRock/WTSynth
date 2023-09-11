@@ -1,0 +1,29 @@
+Builds/VisualStudio2019/.vs/
+Builds/VisualStudio2019/WT Synth.sln
+Builds/VisualStudio2019/WT Synth_SharedCode.vcxproj
+Builds/VisualStudio2019/WT Synth_SharedCode.vcxproj.filters
+Builds/VisualStudio2019/WT Synth_SharedCode.vcxproj.user
+Builds/VisualStudio2019/WT Synth_StandalonePlugin.vcxproj
+Builds/VisualStudio2019/WT Synth_StandalonePlugin.vcxproj.filters
+Builds/VisualStudio2019/WT Synth_VST3.vcxproj
+Builds/VisualStudio2019/WT Synth_VST3.vcxproj.filters
+Builds/VisualStudio2019/WT Synth_VST3.vcxproj.user
+Builds/VisualStudio2019/WTSynth.sln
+Builds/VisualStudio2019/WTSynth_SharedCode.vcxproj
+Builds/VisualStudio2019/WTSynth_SharedCode.vcxproj.filters
+Builds/VisualStudio2019/WTSynth_VST3.vcxproj
+Builds/VisualStudio2019/WTSynth_VST3.vcxproj.filters
+Builds/VisualStudio2019/WTSynth_VST3.vcxproj.user
+Builds/VisualStudio2019/resources.rc
+Builds/VisualStudio2019/x64/Debug/Shared Code/
+Builds/VisualStudio2019/x64/Debug/VST3/WT Synth.vst3
+Builds/VisualStudio2019/x64/Debug/VST3/WTSynth.Build.CppClean.log
+Builds/VisualStudio2019/x64/Debug/VST3/WTSynth.exp
+Builds/VisualStudio2019/x64/Debug/VST3/WTSynth.ilk
+Builds/VisualStudio2019/x64/Debug/VST3/WTSynth.lib
+Builds/VisualStudio2019/x64/Debug/VST3/WTSynth.pdb
+Builds/VisualStudio2019/x64/Debug/VST3/WTSynth_VST3.log
+Builds/VisualStudio2019/x64/Debug/VST3/WTSynth_VST3.tlog/
+Builds/VisualStudio2019/x64/Debug/VST3/WTSynth_VST3.vcxproj.FileListAbsolute.txt        
+Builds/VisualStudio2019/x64/Debug/VST3/include_juce_audio_plugin_client_VST3.obj        
+Builds/VisualStudio2019/x64/Debug/VST3/resources.res
