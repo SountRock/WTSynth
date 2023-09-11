@@ -20,7 +20,7 @@ WTSynthAudioProcessor::WTSynthAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), apvts(*this, nullptr, "Parameters", createParams())
 #endif
 {
 }
@@ -136,6 +136,9 @@ void WTSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 	buffer.clear();
 
 	synth1.processBlock(buffer, midiMessages);
+	synth2.processBlock(buffer, midiMessages);
+	synth3.processBlock(buffer, midiMessages);
+	synth4.processBlock(buffer, midiMessages);
 }
 
 //==============================================================================
@@ -163,9 +166,74 @@ void WTSynthAudioProcessor::setStateInformation (const void* data, int sizeInByt
     // whose contents will have been created by the getStateInformation() call.
 }
 
+juce::AudioProcessorValueTreeState::ParameterLayout WTSynthAudioProcessor::createParams()
+{
+	std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
+
+	//////////////////////Volume 
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("VOLUME", "Volume", juce::NormalisableRange<float> {0.0f, 100.0f, 0.01f}, 60.0f));
+
+	//////////////////////OSC1
+	params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC1STATUS", "Osc 1 Status", juce::StringArray{ "G&M", "MOD" }, 0));
+	params.push_back(std::make_unique<juce::AudioParameterInt>("OSCMODINPUT1", "Osc 1 Modulation Input", 1, 10, 0));////////////
+	params.push_back(std::make_unique<juce::AudioParameterInt>("OSCMODOUTPUT1", "Osc 1 Modulation Output", 1, 10, 0));////////////
+	params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC1WAVETYPE", "Osc 1 Wave Type", juce::StringArray{ "Sine", "Saw", "Square" }, 0));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("FMFREQ1", "Osc 1 FM Frequency", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("FMDEPTH1", "Osc 1 FM Depth", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("OSC1FREQ", "Osc 1 Frequency", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 5.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("VOLUME1", "Osc 1 Volume", juce::NormalisableRange<float> {0.0f, 100.0f, 0.01f}, 60.0f));
+	//////////////////////OSC2
+	params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC2STATUS", "Osc 2 Status", juce::StringArray{ "G&M", "MOD" }, 0));
+	params.push_back(std::make_unique<juce::AudioParameterInt>("OSCMODINPUT2", "Osc 2 Modulation Input", 1, 10, 0));////////////
+	params.push_back(std::make_unique<juce::AudioParameterInt>("OSCMODOUTPUT2", "Osc 2 Modulation Output", 1, 10, 0));////////////
+	params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC2WAVETYPE", "Osc 2 Wave Type", juce::StringArray{ "Sine", "Saw", "Square" }, 0));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("FMFREQ2", "Osc 2 FM Frequency", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("FMDEPTH2", "Osc 2 FM Depth", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("OSC2FREQ", "Osc 2 Frequency", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 5.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("VOLUME2", "Osc 2 Volume", juce::NormalisableRange<float> {0.0f, 100.0f, 0.01f}, 60.0f));
+	//////////////////////OSC3
+	params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC3STATUS", "Osc 3 Status", juce::StringArray{ "G&M", "MOD" }, 0));
+	params.push_back(std::make_unique<juce::AudioParameterInt>("OSCMODINPUT3", "Osc 3 Modulation Input", 1, 10, 0));////////////
+	params.push_back(std::make_unique<juce::AudioParameterInt>("OSCMODOUTPUT3", "Osc 3 Modulation Output", 1, 10, 0));////////////
+	params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC3WAVETYPE", "Osc 3 Wave Type", juce::StringArray{ "Sine", "Saw", "Square" }, 0));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("FMFREQ3", "Osc 3 FM Frequency", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("FMDEPTH3", "Osc 3 FM Depth", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("OSC3FREQ", "Osc 3 Frequency", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 5.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("VOLUME3", "Osc 3 Volume", juce::NormalisableRange<float> {0.0f, 100.0f, 0.01f}, 60.0f));
+	//////////////////////OSC4
+	params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC4STATUS", "Osc 4 Status", juce::StringArray{ "G&M", "MOD" }, 0));
+	params.push_back(std::make_unique<juce::AudioParameterInt>("OSCMODINPUT4", "Osc 4 Modulation Input", 1, 10, 0));////////////
+	params.push_back(std::make_unique<juce::AudioParameterInt>("OSCMODOUTPUT4", "Osc 4 Modulation Output", 1, 10, 0));////////////
+	params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC4WAVETYPE", "Osc 4 Wave Type", juce::StringArray{ "Sine", "Saw", "Square" }, 0));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("FMFREQ4", "Osc 4 FM Frequency", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("FMDEPTH4", "Osc 4 FM Depth", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("OSC4FREQ", "Osc 4 Frequency", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 5.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("VOLUME4", "Osc 4 Volume", juce::NormalisableRange<float> {0.0f, 100.0f, 0.01f}, 60.0f));
+
+	//////////////////////ADSR
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("ATTACK", "Attack", juce::NormalisableRange<float>{0.00001f, 1.0f, 0.001f}, 0.1f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("DECAY", "Decay", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 0.1f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("SUSTAIN", "Sustain", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 1.0f));
+	//start value !!
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("RELEAZE", "Releaze", juce::NormalisableRange<float>{0.1f, 4.0f, 0.001f}, 0.4f));
+
+	//////////////////////filter
+	params.push_back(std::make_unique<juce::AudioParameterChoice>("FILTERTYPE", "Filter Type", juce::StringArray{ "LowPass", "BandPass", "HighPass" }, 0));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter CutOff", juce::NormalisableRange<float>{20.0f, 20000.0f, 0.1f, 0.6f}, 200.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", juce::NormalisableRange<float>{1.0f, 10.0f, 0.1f}, 1.0f));
+	//////////////////////filter ADSR 
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("MODATTACK", "Mod Attack", juce::NormalisableRange<float>{0.00001f, 1.0f, 0.001f}, 0.1f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("MODDECAY", "Mod Decay", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 0.1f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("MODSUSTAIN", "Mod Sustain", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 1.0f));
+
+	return { params.begin(), params.end() };
+}
+
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new WTSynthAudioProcessor();
 }
+
+

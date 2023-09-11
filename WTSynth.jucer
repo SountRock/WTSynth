@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="rnln4V" name="WT Synth" projectType="audioplug" useAppConfig="0"
+<JUCERPROJECT id="rnln4V" name="WTSynth" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginFormats="buildVST3">
-  <MAINGROUP id="sboH7P" name="WT Synth">
+  <MAINGROUP id="sboH7P" name="WTSynth">
     <GROUP id="{8F28BB85-8C7F-61A7-DA27-153190FC50C1}" name="Source">
       <GROUP id="{D474F606-4754-0D2C-183D-3434DF27453F}" name="Data">
         <FILE id="d6pZxV" name="WTOSC.cpp" compile="1" resource="0" file="Source/Data/WTOSC.cpp"/>
@@ -25,8 +25,8 @@
   <EXPORTFORMATS>
     <VS2019 targetFolder="Builds/VisualStudio2019">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="WT Synth"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="WT Synth"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="WTSynth"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="WTSynth"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../../../../Program Files/JUCE_2022(7.03)/modules"/>

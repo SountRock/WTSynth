@@ -56,9 +56,15 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+	juce::AudioProcessorValueTreeState::ParameterLayout createParams();
+
+	juce::AudioProcessorValueTreeState apvts;
 private:
     //==============================================================================
 	WTSynth synth1;
+	WTSynth synth2;
+	WTSynth synth3;
+	WTSynth synth4;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WTSynthAudioProcessor)
 };
