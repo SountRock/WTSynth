@@ -25,20 +25,39 @@ void WTSynth::prepareToPlay(double sampleRate)
 	initializeOscillators();
 }
 
-void WTSynth::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages, std::vector<double> envl)
+void WTSynth::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
 	auto currentSample = 0;
+
+	/////TIME
+	timeKoeff = 1000 / (sampleRate * buffer.getNumChannels());
+	/////TIME
 
 	for (const auto midiMessage : midiMessages) {
 		const auto midiEvent = midiMessage.getMessage();
 		const auto midiEventSample = static_cast<int>(midiEvent.getTimeStamp());
 
-		render(buffer, currentSample, midiEventSample, envl);
+		render(buffer, currentSample, midiEventSample);
 		handleMidiEvent(midiEvent);
 
 		currentSample = midiEventSample;
 	}
-	render(buffer, currentSample, buffer.getNumSamples(), envl);
+	render(buffer, currentSample, buffer.getNumSamples());
+}
+
+void WTSynth::setENVLParams(double attack, double decay, double sustain, double realize)
+{
+	attackInSamples = attack / timeKoeff;
+	decayInSamples = attackInSamples + decay / timeKoeff;
+	sustainInSamples = decayInSamples + sustain / timeKoeff;
+	realizeInSamples = sustainInSamples + realize / timeKoeff;
+	
+	koeffAttack = 1.0 / attackInSamples;
+	koeffDecay = (1.0 - 0.7) / (decayInSamples - attackInSamples);
+	koeffSustain = 0.7;
+	koeffRealize = koeffSustain / (realizeInSamples - sustainInSamples);
+
+	envl.resize(realizeInSamples);
 }
 
 void WTSynth::initializeOscillators()
@@ -54,13 +73,21 @@ void WTSynth::initializeOscillators()
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////
 void WTSynth::handleMidiEvent(const juce::MidiMessage& midiEvent)
 {
 	if (midiEvent.isNoteOn()) {
 		const auto oscillatorID = midiEvent.getNoteNumber();
 		const auto freq = midiNoteNumberToFrequency(oscillatorID);
 		oscillators[oscillatorID].setFrequency(freq);
+	//} else if (timeInSamples > envl.size()) {
 	} else if (midiEvent.isNoteOff()) {
+		/////TIME
+		timeNote = 0;
+		timeInSamples = 0;
+		/////TIME
+		
+		//lastOscillatorID = midiEvent.getNoteNumber();
 		const auto oscillatorID = midiEvent.getNoteNumber();
 		oscillators[oscillatorID].stop();
 	} else if (midiEvent.isAllNotesOff()) {
@@ -69,6 +96,20 @@ void WTSynth::handleMidiEvent(const juce::MidiMessage& midiEvent)
 		}
 	}
 }
+
+void WTSynth::noteOn(int timeInSamples)
+{
+	
+
+	//if (timeInSamples >= sustainInSamples) { timeInSamples--; }
+}
+
+void WTSynth::noteOff(int timeInSamples)
+{
+	
+}
+
+////////////////////////////////////////////////////////////////////////////////////
 
 float WTSynth::midiNoteNumberToFrequency(int midiNoteNumber)
 {
@@ -79,16 +120,44 @@ float WTSynth::midiNoteNumberToFrequency(int midiNoteNumber)
 	return A4_FREQUENCY * std::powf(2.f, (midiNoteNumber - A4_NOTE_NUMBER) / SEMITONES_IN_AN_OCTAVE);
 }
 
-void WTSynth::render(juce::AudioBuffer<float>& buffer, int startSample, int endSample, std::vector<double> envl)
+void WTSynth::render(juce::AudioBuffer<float>& buffer, int startSample, int endSample)
 {
 	auto* firstChannel = buffer.getWritePointer(0);
 
 	for (auto& oscillator : oscillators) {
 		if (oscillator.isPlaying()) {
+			/////TIME
+			timeInSamples++;
+			/////TIME
+
+			if (timeInSamples < attackInSamples) {
+				envl[timeInSamples] = koeffAttack * timeInSamples;
+				DBG("attack");
+			}
+
+			if (timeInSamples >= attackInSamples && timeInSamples < decayInSamples) {
+				envl[timeInSamples] = 1.0 - koeffDecay * (timeInSamples - attackInSamples);
+				DBG("decay");
+			}
+
+			if (timeInSamples >= decayInSamples && timeInSamples < sustainInSamples) {
+				envl[timeInSamples] = koeffSustain;
+				DBG("sustain");
+			}
+
+			if (timeInSamples >= sustainInSamples && timeInSamples < envl.size()) {
+				envl[timeInSamples] = koeffSustain - koeffRealize * (timeInSamples - sustainInSamples);
+				DBG("realize");
+			}
+			
+			/////GENERATE 
 			for (auto sample = startSample; sample < endSample; ++sample) {
-				firstChannel[sample] += oscillator.getSample() * envl[sample];
+				if (timeInSamples < envl.size()) {
+					firstChannel[sample] += oscillator.getSample(envl[timeInSamples]);
+				}
 			}
 		}
+
 	}
 
 	for (auto channel = 1; channel < buffer.getNumChannels(); ++channel) {

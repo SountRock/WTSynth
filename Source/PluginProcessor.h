@@ -62,13 +62,17 @@ public:
 
 	juce::AudioProcessorValueTreeState apvts;
 
-	std::vector<double> envlGenerate(int numSamples, double attack, double decay, double sustain, double realize);
+	//std::vector<double> envlGenerate(int numSamples, double attack, double decay, double sustain, double realize);
 
 	bool envlChanged = false;
 private:
     //==============================================================================
 	WTSynth synth;
 	std::vector<double> envl;
+
+	double sampleRate;
+
+	int timeInSamples = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WTSynthAudioProcessor)
 };

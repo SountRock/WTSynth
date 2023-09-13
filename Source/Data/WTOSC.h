@@ -17,14 +17,18 @@ public:
 	~WTOSC();
 
 	void setFrequency(float frequency);
-	float getSample();
+	float getSample(double level);
 	float interpolateLinearly();
 	void stop();
 	bool isPlaying();
+
+	//void setENVL(std::vector<double> envl) { this->envl.swap(envl); };
 
 private:
 	std::vector<float> waveTable;
 	double sampleRate;
 	float index = 0.f;
 	float indexIncrement = 0.f;
+
+	//std::vector<double> envl;
 };

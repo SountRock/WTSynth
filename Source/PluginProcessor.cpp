@@ -96,6 +96,8 @@ void WTSynthAudioProcessor::changeProgramName (int index, const juce::String& ne
 void WTSynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
 	synth.prepareToPlay(sampleRate);
+
+	this->sampleRate = sampleRate;
 }
 
 void WTSynthAudioProcessor::releaseResources()
@@ -134,13 +136,41 @@ void WTSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 {
 	juce::ScopedNoDenormals noDenormals;
 
+	/*
+	//Time On
+	float interval = 1 / sampleRate;
+
+	double time = (interval * timeInSamples * 1000) / buffer.getNumChannels();
+	timeInSamples++;
+
+	DBG(time);
+	//Time On
+	*/
+
 	buffer.clear();
 
-	if (envlChanged) {
-		envl.swap(envlGenerate(buffer.getNumSamples(), 0.0, 0.0, 0.0, 0.0));
-	}
+	///////////////////////////////////////////////////ENVELOPE
+	//envlPhase = (int)(timePhase / (500 / sampleRate));
+	//attackPhase = (int)(attackTime / (500 / sampleRate));
+	//decayPhase = (int)(decayTime / (500 / sampleRate));
+	//realizePhase = (int)(realizeTime / (500 / sampleRate));
 
-	synth.processBlock(buffer, midiMessages, envl);
+	auto& attack = *apvts.getRawParameterValue("ATTACK");
+	auto& decay = *apvts.getRawParameterValue("DECAY");
+	auto& sustain = *apvts.getRawParameterValue("SUSTAIN");
+	auto& releaze = *apvts.getRawParameterValue("RELEAZE");
+
+	synth.setENVLParams(attack, decay, sustain, releaze);
+	/*
+	if (envlChanged) {
+		envl.swap(envlGenerate(buffer.getNumSamples(), 4.0, 1.0, 3.0, 1.0));
+	}
+	*/
+	///////////////////////////////////////////////////ENVELOPE
+
+	//попробывать сделать генерацию волны прараллельной обрабтке семплов. Сделать отдельный таймер в WTSynth который запускается при midiEvent.isNoteOn() и отключается midiEvent.isAllNotesOff()
+
+	synth.processBlock(buffer, midiMessages);
 	
 }
 
@@ -170,20 +200,47 @@ void WTSynthAudioProcessor::setStateInformation (const void* data, int sizeInByt
 }
 
 //ENVELOPE==============================================================================
+/*
 std::vector<double> WTSynthAudioProcessor::envlGenerate(int numSamples, double attack, double decay, double sustain, double realize)
 {
 	std::vector<double> envlGen;
+	//envlGen.resize(numSamples);
 
-	envlGen.resize(numSamples);
+	int attackPhase = attack * sampleRate * numSamples / 1000;
+	int decayPhase = attackPhase + (decay * sampleRate * numSamples / 1000);
+	int sustainPhase = decayPhase + (sustain * sampleRate * numSamples / 1000);
+	int realizePhase = sustainPhase + (realize * sampleRate * numSamples / 1000);
 
-	for (auto s = 0; s < numSamples; s++) {
-		envlGen[s] = 1.0;
+	envlGen.resize(realizePhase);
+	
+	double koeffAttack = 1.0 / attackPhase;
+	double koeffDecay = (1.0 - 0.7) / (decayPhase - attackPhase);
+	double koeffSustain = 0.7;
+	double koeffRealize = koeffSustain / (numSamples - sustainPhase);
+
+	/////////GENERATE 
+	//Attack generate
+	for (auto a = 0; a < numSamples; a++) {
+		envlGen[a] = koeffAttack * a;
 	}
+	//Decay generate
+	for (auto d = attackPhase; d < decayPhase; d++) {
+		envlGen[d] = 1.0 - koeffDecay * d;
+	}
+	//Sustain generate
+	for (auto s = decayPhase; s < sustainPhase; s++) {
+		envlGen[s] = koeffSustain * s;
+	}
+	//Realize generate
+	for (auto r = sustainPhase; r < realizePhase; r++) {
+		envlGen[r] = koeffSustain - koeffRealize * r;
+	}
+	/////////GENERATE 
 
 	envlChanged = false;
-
 	return envlGen;
 }
+*/
 //ENVELOPE==============================================================================
 
 juce::AudioProcessorValueTreeState::ParameterLayout WTSynthAudioProcessor::createParams()
@@ -192,6 +249,40 @@ juce::AudioProcessorValueTreeState::ParameterLayout WTSynthAudioProcessor::creat
 
 	//////////////////////Volume 
 	params.push_back(std::make_unique<juce::AudioParameterFloat>("VOLUME", "Volume", juce::NormalisableRange<float> {0.0f, 100.0f, 0.01f}, 60.0f));
+
+	//////////////////////ADSR
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("ATTACK", "Attack", juce::NormalisableRange<float>{0.00001f, 1.0f, 0.001f}, 0.1f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("DECAY", "Decay", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 0.1f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("SUSTAIN", "Sustain", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 1.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("RELEAZE", "Releaze", juce::NormalisableRange<float>{0.1f, 4.0f, 0.001f}, 0.4f));
+
+	//////////////////////ADSR ADVANCED
+	///////ATTACK ADVANCED
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("ATTACKSCALE", "Attack SCALE", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 1.0f));
+	///////DECAY ADVANCED
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("DECAYCALE", "Decay SCALE", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 1.0f));
+	///////SUSTAIN ADVANCED
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("SUSTAINSCALE", "Sustain Scale", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 1.0f));
+	///////REALIZE ADVANCED
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("REALIZESCALE", "Realise Scale", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 1.0f));
+
+	///////POINTS LEVEL
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("ADPOINT", "AD Point", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 1.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("DSPOINT", "DS Point", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 1.0f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("SRPOINT", "SR Point", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 1.0f));
+	//
+	// |        |AD |                  |
+	// |       /|\  |                  |
+	// |      / | \ |                  |
+	// |     /  |  \|                  |SR 
+	// |    /   |   |__________________|
+	// |   /    |   |DS                |\
+	// |  /     |   |                  | \
+	// | /      |   |                  |  \
+	// |/       |   |                  |   \
+	//
+
+
 
 	//////////////////////OSC1
 	params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC1STATUS", "Osc 1 Status", juce::StringArray{ "G&M", "MOD" }, 0));
@@ -229,13 +320,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout WTSynthAudioProcessor::creat
 	params.push_back(std::make_unique<juce::AudioParameterFloat>("FMDEPTH4", "Osc 4 FM Depth", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
 	params.push_back(std::make_unique<juce::AudioParameterFloat>("OSC4FREQ", "Osc 4 Frequency", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 5.0f));
 	params.push_back(std::make_unique<juce::AudioParameterFloat>("VOLUME4", "Osc 4 Volume", juce::NormalisableRange<float> {0.0f, 100.0f, 0.01f}, 60.0f));
-
-	//////////////////////ADSR
-	params.push_back(std::make_unique<juce::AudioParameterFloat>("ATTACK", "Attack", juce::NormalisableRange<float>{0.00001f, 1.0f, 0.001f}, 0.1f));
-	params.push_back(std::make_unique<juce::AudioParameterFloat>("DECAY", "Decay", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 0.1f));
-	params.push_back(std::make_unique<juce::AudioParameterFloat>("SUSTAIN", "Sustain", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 1.0f));
-	//start value !!
-	params.push_back(std::make_unique<juce::AudioParameterFloat>("RELEAZE", "Releaze", juce::NormalisableRange<float>{0.1f, 4.0f, 0.001f}, 0.4f));
 
 	//////////////////////filter
 	params.push_back(std::make_unique<juce::AudioParameterChoice>("FILTERTYPE", "Filter Type", juce::StringArray{ "LowPass", "BandPass", "HighPass" }, 0));
