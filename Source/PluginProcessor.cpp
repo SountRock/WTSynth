@@ -23,7 +23,7 @@ WTSynthAudioProcessor::WTSynthAudioProcessor()
                        ), apvts(*this, nullptr, "Parameters", createParams())
 #endif
 {
-	envlChanged = true;
+	
 }
 
 WTSynthAudioProcessor::~WTSynthAudioProcessor()
@@ -161,6 +161,8 @@ void WTSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 	auto& releaze = *apvts.getRawParameterValue("RELEAZE");
 
 	synth.setENVLParams(attack, decay, sustain, releaze);
+
+
 	/*
 	if (envlChanged) {
 		envl.swap(envlGenerate(buffer.getNumSamples(), 4.0, 1.0, 3.0, 1.0));

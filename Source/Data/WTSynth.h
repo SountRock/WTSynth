@@ -41,10 +41,10 @@ private:
 	float timeNote = 0;
 	int timeInSamples = 0;
 
-	double attackInSamples;
-	double decayInSamples;
-	double sustainInSamples;
-	double realizeInSamples;
+	int attackInSamples;
+	int decayInSamples;
+	int sustainInSamples;
+	int realizeInSamples;
 
 	double koeffAttack;
 	double koeffDecay;
@@ -55,7 +55,7 @@ private:
 
 	bool oscPlay = false;
 
-	//juce::dsp::Gain<float> gainDynamic;
+
 
 	std::vector<double> envl;
 };

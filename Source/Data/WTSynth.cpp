@@ -22,7 +22,7 @@ void WTSynth::prepareToPlay(double sampleRate)
 {
 	this->sampleRate = sampleRate;
 
-	initializeOscillators();
+	initializeOscillators(); //
 }
 
 void WTSynth::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -47,10 +47,10 @@ void WTSynth::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& m
 
 void WTSynth::setENVLParams(double attack, double decay, double sustain, double realize)
 {
-	attackInSamples = attack / timeKoeff;
-	decayInSamples = attackInSamples + decay / timeKoeff;
-	sustainInSamples = decayInSamples + sustain / timeKoeff;
-	realizeInSamples = sustainInSamples + realize / timeKoeff;
+	attackInSamples = (int) (attack / timeKoeff);
+	decayInSamples = (int)(attackInSamples + decay / timeKoeff);
+	sustainInSamples = (int)(decayInSamples + sustain / timeKoeff);
+	realizeInSamples = (int)(sustainInSamples + realize / timeKoeff);
 	
 	koeffAttack = 1.0 / attackInSamples;
 	koeffDecay = (1.0 - 0.7) / (decayInSamples - attackInSamples);
@@ -58,6 +58,32 @@ void WTSynth::setENVLParams(double attack, double decay, double sustain, double 
 	koeffRealize = koeffSustain / (realizeInSamples - sustainInSamples);
 
 	envl.resize(realizeInSamples);
+
+	/*
+	for (auto t = 0; t < envl.size(); t++) {
+		if (t < attackInSamples) {
+			envl[t] = koeffAttack * t;
+			DBG("attack");
+		}
+
+		if (t >= attackInSamples && t < decayInSamples) {
+			envl[t] = 1.0 - koeffDecay * (t - attackInSamples);
+			DBG("decay");
+		}
+
+		if (t >= decayInSamples && t < sustainInSamples) {
+			envl[t] = koeffSustain;
+			DBG("sustain");
+		}
+
+		//if (t >= sustainInSamples && t < envl.size()) {
+		if (t >= sustainInSamples) {
+			envl[t] = koeffSustain - koeffRealize * (t - sustainInSamples);
+			DBG("realize");
+		}
+	}
+	*/
+	
 }
 
 void WTSynth::initializeOscillators()
@@ -76,31 +102,63 @@ void WTSynth::initializeOscillators()
 ////////////////////////////////////////////////////////////////////////////////////
 void WTSynth::handleMidiEvent(const juce::MidiMessage& midiEvent)
 {
+	const auto oscillatorID = midiEvent.getNoteNumber();
 	if (midiEvent.isNoteOn()) {
-		const auto oscillatorID = midiEvent.getNoteNumber();
+		oscillators[lastOscillatorID].stop();
+		timeInSamples = 0;
+		//initializeOscillators();
 		const auto freq = midiNoteNumberToFrequency(oscillatorID);
 		oscillators[oscillatorID].setFrequency(freq);
-	//} else if (timeInSamples > envl.size()) {
+
+		for (int s = 0; s < envl.size(); s++) {
+			if (s < attackInSamples) {
+				envl[s] = koeffAttack * s;
+				DBG("attack");
+			}
+
+			if (s >= attackInSamples && s < decayInSamples) {
+				envl[s] = 1.0 - koeffDecay * (s - attackInSamples);
+				DBG("decay");
+			}
+
+			if (s >= decayInSamples && s < sustainInSamples) {
+				envl[s] = koeffSustain;
+				DBG("sustain");
+			}
+
+			if (s >= sustainInSamples && s < envl.size()) {
+				envl[s] = koeffSustain - koeffRealize * (s - sustainInSamples);
+				DBG("realize");
+			}
+		}
+
+		oscillators[oscillatorID].setENVL(envl);
+
+		lastOscillatorID = oscillatorID;
+	//} else if (midiEvent.isNoteOff() && oscillators[oscillatorID].getTime() > sustainInSamples - 1) { //!!!
 	} else if (midiEvent.isNoteOff()) {
 		/////TIME
-		timeNote = 0;
-		timeInSamples = 0;
+		//timeNote = 0;
+		timeInSamples = sustainInSamples;
 		/////TIME
-		
+
+		//oscillators[oscillatorID].getTime();
 		//lastOscillatorID = midiEvent.getNoteNumber();
-		const auto oscillatorID = midiEvent.getNoteNumber();
-		oscillators[oscillatorID].stop();
+		//const auto oscillatorID = midiEvent.getNoteNumber();
+		//oscillators[oscillatorID].stop();
+		//oscillators.clear();
+
+		DBG("off");
 	} else if (midiEvent.isAllNotesOff()) {
-		for (auto& oscillator : oscillators) {
-			oscillator.stop();
-		}
+		//for (auto& oscillator : oscillators) {
+		//	oscillator.stop();
+		//}
+		//oscillators.clear();
 	}
 }
 
 void WTSynth::noteOn(int timeInSamples)
 {
-	
-
 	//if (timeInSamples >= sustainInSamples) { timeInSamples--; }
 }
 
@@ -124,42 +182,27 @@ void WTSynth::render(juce::AudioBuffer<float>& buffer, int startSample, int endS
 {
 	auto* firstChannel = buffer.getWritePointer(0);
 
+	//*
+	//timeInSamples = 0;
 	for (auto& oscillator : oscillators) {
 		if (oscillator.isPlaying()) {
 			/////TIME
 			timeInSamples++;
+
+			if (timeInSamples == sustainInSamples - 1) {
+				timeInSamples--;
+			}
 			/////TIME
 
-			if (timeInSamples < attackInSamples) {
-				envl[timeInSamples] = koeffAttack * timeInSamples;
-				DBG("attack");
-			}
-
-			if (timeInSamples >= attackInSamples && timeInSamples < decayInSamples) {
-				envl[timeInSamples] = 1.0 - koeffDecay * (timeInSamples - attackInSamples);
-				DBG("decay");
-			}
-
-			if (timeInSamples >= decayInSamples && timeInSamples < sustainInSamples) {
-				envl[timeInSamples] = koeffSustain;
-				DBG("sustain");
-			}
-
-			if (timeInSamples >= sustainInSamples && timeInSamples < envl.size()) {
-				envl[timeInSamples] = koeffSustain - koeffRealize * (timeInSamples - sustainInSamples);
-				DBG("realize");
-			}
-			
-			/////GENERATE 
 			for (auto sample = startSample; sample < endSample; ++sample) {
 				if (timeInSamples < envl.size()) {
-					firstChannel[sample] += oscillator.getSample(envl[timeInSamples]);
+					firstChannel[sample] += oscillator.getSample(timeInSamples);
 				}
 			}
 		}
-
 	}
-
+	//*/
+	
 	for (auto channel = 1; channel < buffer.getNumChannels(); ++channel) {
 		std::copy(firstChannel + startSample, firstChannel + endSample, buffer.getWritePointer(channel) + startSample);
 	}

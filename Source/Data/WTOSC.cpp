@@ -25,9 +25,10 @@ void WTOSC::setFrequency(float frequency)
 	indexIncrement = frequency * static_cast<float>(waveTable.size()) / static_cast<float>(sampleRate);
 }
 
-float WTOSC::getSample(double level)
+float WTOSC::getSample(int time)
 {
-	const auto sample = interpolateLinearly() * level;
+	this->time = time;
+	const auto sample = interpolateLinearly() * envl[time];
 	index += indexIncrement;
 	index = std::fmod(index, static_cast<float>(waveTable.size()));
 	return sample;
