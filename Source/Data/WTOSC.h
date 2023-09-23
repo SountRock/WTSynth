@@ -26,6 +26,13 @@ public:
 
 	int getTime() { return time; };
 
+
+
+
+	void setPhase(int phase) { this->phase = phase; };
+	int getPhase() { return phase; };
+	void phaseDestroy() { phase = 0; }; //////
+
 private:
 	std::vector<float> waveTable;
 	double sampleRate;
@@ -34,4 +41,7 @@ private:
 
 	std::vector<double> envl;
 	int time = 0;
+
+	bool phaseChanged = false; //////
+	int phase = 0;
 };

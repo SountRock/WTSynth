@@ -102,8 +102,7 @@ void WTSynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
 
 void WTSynthAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+	synth.releaseResorces();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -160,7 +159,7 @@ void WTSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 	auto& sustain = *apvts.getRawParameterValue("SUSTAIN");
 	auto& releaze = *apvts.getRawParameterValue("RELEAZE");
 
-	synth.setENVLParams(attack, decay, sustain, releaze);
+	synth.setENVLParams(attack, decay, sustain, 5.0);
 
 
 	/*
@@ -253,7 +252,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout WTSynthAudioProcessor::creat
 	params.push_back(std::make_unique<juce::AudioParameterFloat>("VOLUME", "Volume", juce::NormalisableRange<float> {0.0f, 100.0f, 0.01f}, 60.0f));
 
 	//////////////////////ADSR
-	params.push_back(std::make_unique<juce::AudioParameterFloat>("ATTACK", "Attack", juce::NormalisableRange<float>{0.00001f, 1.0f, 0.001f}, 0.1f));
+	params.push_back(std::make_unique<juce::AudioParameterFloat>("ATTACK", "Attack", juce::NormalisableRange<float>{0.00001f, 1.0f, 0.001f}, 0.5f));
 	params.push_back(std::make_unique<juce::AudioParameterFloat>("DECAY", "Decay", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 0.1f));
 	params.push_back(std::make_unique<juce::AudioParameterFloat>("SUSTAIN", "Sustain", juce::NormalisableRange<float>{0.1f, 1.0f, 0.001f}, 1.0f));
 	params.push_back(std::make_unique<juce::AudioParameterFloat>("RELEAZE", "Releaze", juce::NormalisableRange<float>{0.1f, 4.0f, 0.001f}, 0.4f));

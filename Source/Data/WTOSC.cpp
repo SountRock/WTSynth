@@ -29,6 +29,20 @@ float WTOSC::getSample(int time)
 {
 	this->time = time;
 	const auto sample = interpolateLinearly() * envl[time];
+	//////
+
+	//double sample = 0.0;
+
+	//if (phaseChanged) {
+		//if (time > phase) {
+			//sample = interpolateLinearly() * envl[time];
+		//}
+	//}
+	//else {
+		//sample = interpolateLinearly() * envl[time];
+	//}
+	/////
+	//const auto sample = interpolateLinearly() * envl[time];
 	index += indexIncrement;
 	index = std::fmod(index, static_cast<float>(waveTable.size()));
 	return sample;

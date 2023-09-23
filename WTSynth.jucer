@@ -7,6 +7,8 @@
   <MAINGROUP id="sboH7P" name="WTSynth">
     <GROUP id="{8F28BB85-8C7F-61A7-DA27-153190FC50C1}" name="Source">
       <GROUP id="{D474F606-4754-0D2C-183D-3434DF27453F}" name="Data">
+        <FILE id="cuZhYh" name="ADSRData.cpp" compile="1" resource="0" file="Source/Data/ADSRData.cpp"/>
+        <FILE id="Cl22Zu" name="ADSRData.h" compile="0" resource="0" file="Source/Data/ADSRData.h"/>
         <FILE id="d6pZxV" name="WTOSC.cpp" compile="1" resource="0" file="Source/Data/WTOSC.cpp"/>
         <FILE id="PeUnoy" name="WTOSC.h" compile="0" resource="0" file="Source/Data/WTOSC.h"/>
         <FILE id="dMTiYf" name="WTSynth.cpp" compile="1" resource="0" file="Source/Data/WTSynth.cpp"/>
