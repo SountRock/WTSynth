@@ -160,7 +160,7 @@ void WTSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 		fmDepth[i] = *apvts.getRawParameterValue("FMDEPTH" + std::to_string(juce::roundDoubleToInt(i + 1)));
 	}
 
-	synth.processBlock(buffer, midiMessages, attack, decay, sustain, releaze, volumes, freq);
+	synth.processBlock(buffer, midiMessages, attack, decay, sustain, releaze, volumes, freq, fmDepth);
 	
 	//Filter stuff
 	//***

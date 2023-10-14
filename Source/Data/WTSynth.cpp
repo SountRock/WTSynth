@@ -84,8 +84,6 @@ void WTSynth::handleMidiEvent(const juce::MidiMessage& midiEvent)
 			OSC[o][oscillatorID].noteOn();
 		}
 
-		lastOscillatorID = oscillatorID;
-
 		timeInSamples = 0;
 	} else if (midiEvent.isNoteOff()) {
 		for (auto o = 0; o < OSCILLATORS_COUNT; o++) {
