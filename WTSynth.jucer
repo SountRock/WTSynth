@@ -6,9 +6,23 @@
               pluginFormats="buildVST3">
   <MAINGROUP id="sboH7P" name="WTSynth">
     <GROUP id="{8F28BB85-8C7F-61A7-DA27-153190FC50C1}" name="Source">
+      <GROUP id="{354D770A-7BF8-19DF-A3A4-22D270FD3A1A}" name="UInterface">
+        <FILE id="rTucqa" name="ADSRComponent.cpp" compile="1" resource="0"
+              file="Source/UInterface/ADSRComponent.cpp"/>
+        <FILE id="vCIC8d" name="ADSRComponent.h" compile="0" resource="0" file="Source/UInterface/ADSRComponent.h"/>
+        <FILE id="zI3xl2" name="FilterComponent.cpp" compile="1" resource="0"
+              file="Source/UInterface/FilterComponent.cpp"/>
+        <FILE id="teOaE9" name="FilterComponent.h" compile="0" resource="0"
+              file="Source/UInterface/FilterComponent.h"/>
+        <FILE id="eGElhQ" name="OSCComponent.cpp" compile="1" resource="0"
+              file="Source/UInterface/OSCComponent.cpp"/>
+        <FILE id="jXd1th" name="OSCComponent.h" compile="0" resource="0" file="Source/UInterface/OSCComponent.h"/>
+      </GROUP>
       <GROUP id="{D474F606-4754-0D2C-183D-3434DF27453F}" name="Data">
         <FILE id="cuZhYh" name="ADSRData.cpp" compile="1" resource="0" file="Source/Data/ADSRData.cpp"/>
         <FILE id="Cl22Zu" name="ADSRData.h" compile="0" resource="0" file="Source/Data/ADSRData.h"/>
+        <FILE id="CuBjnP" name="FilterData.cpp" compile="1" resource="0" file="Source/Data/FilterData.cpp"/>
+        <FILE id="CW0kr4" name="FilterData.h" compile="0" resource="0" file="Source/Data/FilterData.h"/>
         <FILE id="d6pZxV" name="WTOSC.cpp" compile="1" resource="0" file="Source/Data/WTOSC.cpp"/>
         <FILE id="PeUnoy" name="WTOSC.h" compile="0" resource="0" file="Source/Data/WTOSC.h"/>
         <FILE id="dMTiYf" name="WTSynth.cpp" compile="1" resource="0" file="Source/Data/WTSynth.cpp"/>

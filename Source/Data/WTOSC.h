@@ -10,6 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
+#include "ADSRData.h"
 
 class WTOSC {
 public:
@@ -17,31 +18,40 @@ public:
 	~WTOSC();
 
 	void setFrequency(float frequency);
-	float getSample(int time);
+	float getSample();
 	float interpolateLinearly();
 	void stop();
 	bool isPlaying();
 
-	void setENVL(std::vector<double> envl) { this->envl.swap(envl); };
-
 	int getTime() { return time; };
 
+	void noteOn() { adsr.noteOn(); };
+	void noteOff() { adsr.noteOff(); };
+	void setSampleRateADSR(double sampleRate) { adsr.setSampleRate(sampleRate); };
+	void updateADSR(double attack, double decay, double sustain, double realize) { adsr.updateADSR(attack, decay, sustain, realize); };
+	void setPlusFrequency(double freq);
+	void setVolume(double volume) { this->volume = volume; };
 
-
-
-	void setPhase(int phase) { this->phase = phase; };
-	int getPhase() { return phase; };
-	void phaseDestroy() { phase = 0; }; //////
+	void setModulation(std::vector<float> modTable, float indexIncrementMod) { this->modTable = modTable; this->indexIncrementMod = indexIncrementMod; };
+	void killModulation() { modTable.clear();  indexIncrementMod = 0.f; };
+	std::vector<float> getTable() { return waveTable; };
+	void setFMDepth(float fmDepth) { this->fmDepth = fmDepth; };
+	float getPlusIncrement() { return indexIncrementPlus; };
 
 private:
 	std::vector<float> waveTable;
+	std::vector<float> modTable;
 	double sampleRate;
 	float index = 0.f;
 	float indexIncrement = 0.f;
+	float indexIncrementPlus = 0.f;
+	float indexIncrementMod = 0.f;
 
-	std::vector<double> envl;
+	ADSRData adsr;
 	int time = 0;
 
-	bool phaseChanged = false; //////
-	int phase = 0;
+	double volume = 0.5;
+	double plusFreq = 0.0;
+	double frequency = 0.0;
+	double fmDepth = 0.0;
 };
