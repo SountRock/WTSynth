@@ -10,7 +10,9 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-
+#include "UInterface//ADSRComponent.h"
+#include "UInterface//FilterComponent.h"
+#include "UInterface//OSCComponent.h"
 //==============================================================================
 /**
 */
@@ -29,5 +31,17 @@ private:
     // access the processor object that created it.
     WTSynthAudioProcessor& audioProcessor;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WTSynthAudioProcessorEditor)
+	OSCComponent osc;
+	OSCComponent osc2;
+	OSCComponent osc3;
+	OSCComponent osc4;
+
+	//std::vector<OSCComponent> OSCComp;
+
+	//juce::OwnedArray<OSCComponent*> OSCComp;
+
+	ADSRComponent adsr;
+	FilterComponent filter;
+
+    //JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WTSynthAudioProcessorEditor)
 };
