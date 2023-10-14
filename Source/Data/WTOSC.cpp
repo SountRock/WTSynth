@@ -20,17 +20,19 @@ WTOSC::~WTOSC()
 
 }
 
+
 void WTOSC::setFrequency(float frequency)
 {
-	indexIncrement = frequency * static_cast<float>(waveTable.size()) / static_cast<float>(sampleRate);
-
-
+	indexIncrement = (frequency) * static_cast<float>(waveTable.size()) / static_cast<float>(sampleRate);
+	//indexIncrementPlus = freq * static_cast<float>(waveTable.size()) / static_cast<float>(sampleRate);
+	//indexIncrement += indexIncrementPlus;
 }
+
 
 float WTOSC::getSample()
 {
-	const auto sample = interpolateLinearly();
-	index += indexIncrement;
+	const auto sample = interpolateLinearly() * adsr.getNextSample() * volume;
+	index += indexIncrement + indexIncrementPlus;
 	index = std::fmod(index, static_cast<float>(waveTable.size()));
 	return sample;
 }
@@ -55,4 +57,9 @@ void WTOSC::stop()
 bool WTOSC::isPlaying()
 {
 	return indexIncrement != 0.f;
+}
+
+void WTOSC::setPlusFrequency(double freq)
+{
+	indexIncrementPlus = freq * static_cast<float>(waveTable.size()) / static_cast<float>(sampleRate);
 }
