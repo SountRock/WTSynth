@@ -10,6 +10,8 @@
 
 #include <JuceHeader.h>
 #include "Data//WTSynth.h"
+#include "Data//FilterData.h"
+#include <cmath>
 
 using namespace std;
 //==============================================================================
@@ -62,13 +64,20 @@ public:
 
 	juce::AudioProcessorValueTreeState apvts;
 
-	std::vector<double> envlGenerate(int numSamples, double attack, double decay, double sustain, double realize);
+	std::vector<double> volumes;
+	std::vector<double> freq;
+	std::vector<double> fmDepth;
 
-	bool envlChanged = false;
+	int OSCILLATORS_COUNT;
+
 private:
     //==============================================================================
 	WTSynth synth;
-	std::vector<double> envl;
+	FilterData filter;
+
+	double sampleRate;
+
+	int timeInSamples = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WTSynthAudioProcessor)
 };

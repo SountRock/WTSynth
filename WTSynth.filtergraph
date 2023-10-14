@@ -5,7 +5,7 @@
     <PLUGIN name="Audio Input" descriptiveName="" format="Internal" category="I/O devices"
             manufacturer="JUCE" version="1.0" file="" uniqueId="246006c0"
             isInstrument="0" fileTime="0" infoUpdateTime="0" numInputs="0"
-            numOutputs="8" isShell="0" hasARAExtension="0" uid="246006c0"/>
+            numOutputs="2" isShell="0" hasARAExtension="0" uid="246006c0"/>
     <STATE>0.</STATE>
     <LAYOUT>
       <INPUTS>
@@ -39,7 +39,7 @@
     <STATE>0.</STATE>
     <LAYOUT>
       <INPUTS>
-        <BUS index="0" layout="L R C Lfe Lss Rss Lrs Rrs"/>
+        <BUS index="0" layout="L R"/>
       </INPUTS>
       <OUTPUTS>
         <BUS index="0" layout="disabled"/>
@@ -61,10 +61,26 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <FILTER uid="23" x="0.3981132075471698" y="0.5413385826771654" useARA="0">
+  <FILTER uid="25" x="0.3981132075471698" y="0.6318897637795275" useARA="0"
+          uiLastX_Normal="968" uiLastY_Normal="282" uiopen_Normal="0">
+    <PLUGIN name="Gain PlugIn" format="Internal" category="Effect" manufacturer="JUCE"
+            version="1.0.0" file="Gain PlugIn" uniqueId="7987ff14" isInstrument="0"
+            fileTime="0" infoUpdateTime="0" numInputs="2" numOutputs="2"
+            isShell="0" hasARAExtension="0" uid="7987ff14"/>
+    <STATE>4.qGEN9.</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="L R"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="L R"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="26" x="0.3660377358490566" y="0.4192913385826771" useARA="0">
     <PLUGIN name="WTSynth" format="VST3" category="Instrument|Synth" manufacturer="yourcompany"
-            version="1.0.0" file="D:\MussCode\Project\JUCE\WTSynth\Builds\VisualStudio2019\x64\Debug\VST3\WTSynth.vst3"
-            uniqueId="ffa2de23" isInstrument="1" fileTime="18a85047d7b" infoUpdateTime="18a8505517c"
+            version="1.0.0" file="D:\MussCode\JUCE\WTSynth\Builds\VisualStudio2019\x64\Debug\VST3\WTSynth.vst3"
+            uniqueId="ffa2de23" isInstrument="1" fileTime="18aa946c8a0" infoUpdateTime="18aa9480740"
             numInputs="0" numOutputs="2" isShell="0" hasARAExtension="0"
             uid="e95969e3"/>
     <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
@@ -75,7 +91,9 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <CONNECTION srcFilter="18" srcChannel="4096" dstFilter="23" dstChannel="4096"/>
-  <CONNECTION srcFilter="23" srcChannel="0" dstFilter="19" dstChannel="0"/>
-  <CONNECTION srcFilter="23" srcChannel="1" dstFilter="19" dstChannel="1"/>
+  <CONNECTION srcFilter="18" srcChannel="4096" dstFilter="26" dstChannel="4096"/>
+  <CONNECTION srcFilter="25" srcChannel="0" dstFilter="19" dstChannel="0"/>
+  <CONNECTION srcFilter="25" srcChannel="1" dstFilter="19" dstChannel="1"/>
+  <CONNECTION srcFilter="26" srcChannel="0" dstFilter="25" dstChannel="0"/>
+  <CONNECTION srcFilter="26" srcChannel="1" dstFilter="25" dstChannel="1"/>
 </FILTERGRAPH>
